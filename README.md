@@ -66,3 +66,110 @@ Encountered compilation errors when using modern JWT builder syntax with older l
 1. **Register:** `POST` to `/api/users/create`.
 2. **Login:** `POST` to `/api/auth/login` (Copy the `token`).
 3. **Test Auth:** `GET` to `/api/users/getAll`. In the **Auth** tab, select **Bearer Token** and paste your code.
+
+---
+
+## 🐳 Docker Integration & Deployment
+
+This project is fully containerized to ensure that the Spring Boot API and the MySQL Database work together seamlessly without requiring local software installations.
+
+
+
+---
+
+### 🧠 Docker Challenges & Solutions
+
+### 1. The Persistence Trap (Access Denied)
+MySQL initializes the root password **only** during the first volume creation. If you change the password in the YAML file later, the container ignores it because it reuses the old volume data.
+
+**Solution:** Used `docker-compose down -v` to delete the old **Docker Volume**, forcing MySQL to recreate the database with the updated credentials.
+
+### 2. The Connection Race Condition
+Spring Boot often attempts to connect to the database before the MySQL service is fully "ready," leading to immediate application crashes during bootup.
+
+**Solution:** Implemented a **Healthcheck** in the `docker-compose.yml` so the Java container waits for a successful MySQL "ping" before starting.
+
+### 3. Service Discovery Networking
+Inside the Docker network, `localhost` refers to the container itself, not the host machine, causing the app to fail to find the database.
+
+**Solution:** Updated the JDBC URL to use the service name: `jdbc:mysql://mysqldb:3306/JWTPractice`.
+
+---
+
+### 🚀 Standard Build Workflow
+
+To ensure your latest code changes are reflected and the database is fresh, follow this exact sequence:
+
+1. **Package JAR:** `mvn clean package -DskipTests`
+2. **Purge Environment:** `docker-compose down -v`
+3. **Build & Launch:** `docker-compose up --build`
+
+
+
+---
+
+### 🛠️ Maintenance Commands
+
+| Task | Command |
+| :--- | :--- |
+| **View App Logs** | `docker logs -f jwtbearertoken-java-app-1` |
+| **Check Health** | `docker ps` |
+| **Restart App** | `docker-compose restart java-app` |
+D---
+
+## 🐳 Docker Integration & Deployment
+
+This project is fully containerized to ensure that the Spring Boot API and the MySQL Database work together seamlessly without requiring local software installations.
+
+
+
+---
+
+### 🧠 Docker Challenges & Solutions
+
+### 1. The Persistence Trap (Access Denied)
+MySQL initializes the root password **only** during the first volume creation. If you change the password in the YAML file later, the container ignores it because it reuses the old volume data.
+
+**Solution:** Used `docker-compose down -v` to delete the old **Docker Volume**, forcing MySQL to recreate the database with the updated credentials.
+
+### 2. The Connection Race Condition
+Spring Boot often attempts to connect to the database before the MySQL service is fully "ready," leading to immediate application crashes during bootup.
+
+**Solution:** Implemented a **Healthcheck** in the `docker-compose.yml` so the Java container waits for a successful MySQL "ping" before starting.
+
+### 3. Service Discovery Networking
+Inside the Docker network, `localhost` refers to the container itself, not the host machine, causing the app to fail to find the database.
+
+**Solution:** Updated the JDBC URL to use the service name: `jdbc:mysql://mysqldb:3306/JWTPractice`.
+
+---
+
+## 🏗️ Architecture Details
+
+---
+
+| Service  |  Internal Port  |  External Port  |  Role
+|:--- | :--- | :--- | :---
+| **java-app** |  8083  | 8083  |  Spring Boot API
+| **mysqldb**  |3306 | 3307 | MySql 8.0 Database 
+### 🚀 Standard Build Workflow
+
+To ensure your latest code changes are reflected and the database is fresh, follow this exact sequence:
+
+1. **Package JAR:** `mvn clean package -DskipTests`
+2. **Purge Environment:** `docker-compose down -v`
+3. **Build & Launch:** `docker-compose up --build`
+
+
+
+---
+
+### 🛠️ Maintenance Commands
+
+| Task | Command |
+| :--- | :--- |
+| **View App Logs** | `docker logs -f jwtbearertoken-java-app-1` |
+| **Check Health** | `docker ps` |
+| **Restart App** | `docker-compose restart java-app` |
+
+
