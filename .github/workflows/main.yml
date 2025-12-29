@@ -10,7 +10,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    # This starts a real MySQL instance in the cloud for your tests
+    # This tells EVERY 'run' command to start inside your project folder
+    defaults:
+      run:
+        working-directory: ./JWTBearerToken
+
     services:
       mysql:
         image: mysql:8.0
@@ -32,7 +36,9 @@ jobs:
           cache: maven
 
       - name: Build with Maven
-        run: mvn -B package --file pom.xml
+        # Because of 'defaults' above, it now finds pom.xml perfectly
+        run: mvn -B package
 
       - name: Build Docker Image
-        run: docker build . --file Dockerfile -t jwt-app:latest
+        # We use '.' because we are already inside the JWTBearerToken folder
+        run: docker build . -t jwt-app:latest
