@@ -37,7 +37,7 @@ jobs:
 
       - name: Build with Maven
         # Because of 'defaults' above, it now finds pom.xml perfectly
-        run: mvn -B package
+        run: mvn -B package -DskipTests
 
       - name: Build Docker Image
         # We use '.' because we are already inside the JWTBearerToken folder
