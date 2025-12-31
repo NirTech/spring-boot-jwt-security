@@ -3,10 +3,10 @@ services:
   mysqldb:
     image: mysql:8.0
     environment:
-      MYSQL_DATABASE: JWTPractice # Replace with your DB name
-      MYSQL_ROOT_PASSWORD: MySql!3306 # Replace with your password
+      MYSQL_DATABASE: ${DB_NAME} # Replace with your DB name
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD} # Replace with your password
     ports:
-      - "3307:3306"
+      - "${DB_PORT}:3306"
     healthcheck:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
       interval: 10s
@@ -16,12 +16,12 @@ services:
   java-app:
     build: .
     ports:
-      - "8080:8083"
+      - "${APP_PORT}:8083"
     depends_on:
       mysqldb:
         condition: service_healthy
     environment:
       # Use 'mysqldb' as the hostname because Docker links them by service name
-      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/JWTPractice
-      SPRING_DATASOURCE_USERNAME: root
-      SPRING_DATASOURCE_PASSWORD: MySql!3306
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysqldb:3306/${DB_NAME}
+      SPRING_DATASOURCE_USERNAME: ${DB_USER}
+      SPRING_DATASOURCE_PASSWORD: ${DB_ROOT_PASSWORD}
